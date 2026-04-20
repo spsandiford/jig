@@ -67,31 +67,31 @@
 
 ## Traceability
 
-Updated during roadmap creation.
+Updated: 2026-04-20 after roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| EDIT-01 | — | Pending |
-| EDIT-02 | — | Pending |
-| EDIT-03 | — | Pending |
-| EDIT-04 | — | Pending |
-| EDIT-05 | — | Pending |
-| EDIT-06 | — | Pending |
-| EDIT-07 | — | Pending |
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| XFRM-01 | — | Pending |
-| XFRM-02 | — | Pending |
-| XFRM-03 | — | Pending |
-| CMP-01 | — | Pending |
-| CMP-02 | — | Pending |
+| EDIT-01 | Phase 1 | Pending |
+| EDIT-02 | Phase 1 | Pending |
+| EDIT-03 | Phase 1 | Pending |
+| EDIT-04 | Phase 1 | Pending |
+| EDIT-05 | Phase 1 | Pending |
+| EDIT-06 | Phase 1 | Pending |
+| EDIT-07 | Phase 1 | Pending |
+| NAV-01 | Phase 1 | Pending |
+| NAV-02 | Phase 1 | Pending |
+| NAV-03 | Phase 1 | Pending |
+| XFRM-01 | Phase 2 | Pending |
+| XFRM-02 | Phase 2 | Pending |
+| XFRM-03 | Phase 2 | Pending |
+| CMP-01 | Phase 3 | Pending |
+| CMP-02 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 15 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 15 ⚠️
+- Mapped to phases: 15 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-20*
-*Last updated: 2026-04-20 after initial definition*
+*Last updated: 2026-04-20 after roadmap creation*
