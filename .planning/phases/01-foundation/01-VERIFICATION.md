@@ -1,47 +1,43 @@
 ---
 phase: 01-foundation
-verified: 2026-04-21T01:35:00Z
-status: gaps_found
-score: 12/13 must-haves verified
+verified: 2026-04-21T07:00:00Z
+status: human_needed
+score: 13/13 must-haves verified
 overrides_applied: 0
-gaps:
-  - truth: "The status bar shows nothing in the right slot when the editor is empty (rawJson.trim() === '')"
-    status: failed
-    reason: "AppShell passes only selectedPath and errorCount to StatusBar — rawJson is not forwarded. StatusBar.rawJson is undefined => hasContent=true => 'Valid JSON' renders even when the editor is empty."
-    artifacts:
-      - path: "src/components/AppShell.tsx"
-        issue: "StatusBar rendered as <StatusBar selectedPath={selectedPath} errorCount={errorCount} /> — rawJson prop omitted"
-      - path: "src/components/StatusBar.tsx"
-        issue: "hasContent = rawJson === undefined ? true : rawJson.trim().length > 0 — when rawJson is undefined, hasContent defaults true regardless of editor content"
-    missing:
-      - "Pass rawJson prop from AppShell to StatusBar: <StatusBar selectedPath={selectedPath} errorCount={errorCount} rawJson={rawJson} />"
+re_verification:
+  previous_status: gaps_found
+  previous_score: 12/13
+  gaps_closed:
+    - "The status bar shows nothing in the right slot when the editor is empty (rawJson.trim() === '')"
+  gaps_remaining: []
+  regressions: []
 human_verification:
-  - test: "Open the app with an empty editor and observe the status bar right slot"
-    expected: "Right slot is empty (no badge, no 'Valid JSON' text) when the editor is empty"
-    why_human: "Requires running the browser app — cannot verify DOM render state programmatically without a browser"
   - test: "Hover over the disabled Transform tab and confirm tooltip appears"
     expected: "Tooltip reads 'Transform with jq — available in the next phase'"
     why_human: "Tooltip visibility requires user interaction (hover) in a live browser; Base UI render-prop API differs from Radix asChild — must confirm tooltip actually fires"
   - test: "Press Ctrl+F in the editor and confirm the CodeMirror search panel opens"
     expected: "A search panel appears at the top of the editor allowing text search"
     why_human: "Keyboard event behavior requires a live browser with CodeMirror mounted"
-  - test: "Type {\\\"a\\\": in the editor and confirm a red lint squiggle appears"
+  - test: "Type {\"a\": in the editor and confirm a red lint squiggle appears"
     expected: "CodeMirror displays a red squiggle on the invalid portion in real time"
     why_human: "Live lint rendering requires a running browser instance"
+  - test: "Open the app with an empty editor and observe the status bar right slot"
+    expected: "Right slot is empty (no badge, no 'Valid JSON' text) when the editor is empty"
+    why_human: "Requires running the browser app — cannot verify DOM render state programmatically without a browser"
 ---
 
 # Phase 1: Foundation Verification Report
 
 **Phase Goal:** Users can load, edit, navigate, and copy JSON in a working browser application
-**Verified:** 2026-04-21T01:35:00Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-04-21T07:00:00Z
+**Status:** human_needed
+**Re-verification:** Yes — after gap closure (rawJson prop now forwarded from AppShell to StatusBar)
 
 ## Goal Achievement
 
 ### Observable Truths
 
-The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-specific truths across 3 plans (some overlap). After deduplication the combined list is 13 verifiable truths.
+The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-specific truths across 3 plans. After deduplication the combined list is 13 verifiable truths.
 
 #### ROADMAP Success Criteria
 
@@ -65,12 +61,21 @@ The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-
 | P6 | On the Tree tab, toolbar shows only Open File and Copy — Format/Minify/Repair hidden | VERIFIED | showTransforms = activeTab === 'editor'; transform group wrapped in {showTransforms && ...} |
 | P7 | Switching to Tree tab on valid JSON renders a recursive collapsible tree (NAV-01) | VERIFIED | TreeView useMemo parses rawJson; renders <TreeNode nodeKey="$" path="$" depth={0} .../>; children recursively rendered |
 | P8 | Clicking a node emits its JSONPath to parent via onNodeSelect; status bar shows selected path | VERIFIED | TreeNode onClick calls onSelect(path); buildPath constructs dot/bracket/quoted-bracket notation; onNodeSelect=setSelectedPath in AppShell; StatusBar renders selectedPath |
-| P9 | The status bar shows 'Valid JSON' when rawJson is non-empty and errorCount is 0 | VERIFIED (partial) | StatusBar renders "Valid JSON" in text-[#4ec9b0] when errorCount===0 and hasContent. Note: hasContent is always true when rawJson prop is not passed. |
-| P10 | The status bar shows nothing in the right slot when the editor is empty (rawJson.trim() === '') | FAILED | AppShell does NOT pass rawJson to StatusBar. StatusBar.rawJson is undefined, so hasContent defaults to true. On empty editor with errorCount=0, "Valid JSON" is displayed instead of empty. |
+| P9 | The status bar shows 'Valid JSON' when rawJson is non-empty and errorCount is 0 | VERIFIED | StatusBar renders "Valid JSON" in text-[#4ec9b0] when errorCount===0 and hasContent; rawJson now forwarded from AppShell |
+| P10 | The status bar shows nothing in the right slot when the editor is empty (rawJson.trim() === '') | VERIFIED | AppShell now passes rawJson={rawJson} to StatusBar (line 93); StatusBar.hasContent = rawJson.trim().length > 0; empty editor => hasContent=false => <span /> renders |
 | P11 | JSON larger than 2,000,000 bytes triggers 'File too large for tree view' | VERIFIED | SIZE_GATE_BYTES = 2_000_000; rawJson.length > SIZE_GATE_BYTES check in parse() |
 | P12 | Invalid JSON in editor shows 'Cannot display tree — JSON is not valid.' on Tree tab | VERIFIED | parse() catches JSON.parse exceptions and returns {status:'invalid'}; TreeView renders the message |
 
-**Score:** 12/13 truths verified
+**Score:** 13/13 truths verified
+
+### Gap Closure Confirmation
+
+The previously identified gap is now closed:
+
+- **Gap was:** `AppShell.tsx` rendered `<StatusBar selectedPath={selectedPath} errorCount={errorCount} />` — `rawJson` prop omitted, causing `hasContent` to default to `true` so "Valid JSON" appeared even on an empty editor.
+- **Fix applied:** Line 93 of `src/components/AppShell.tsx` now reads `<StatusBar selectedPath={selectedPath} errorCount={errorCount} rawJson={rawJson} />`.
+- **Verified directly:** `grep -n "rawJson" src/components/AppShell.tsx` confirms `rawJson={rawJson}` on line 93 alongside `selectedPath` and `errorCount`.
+- **StatusBar logic confirmed:** `hasContent = rawJson === undefined ? true : rawJson.trim().length > 0` — now that `rawJson` is passed, an empty editor (rawJson is `''`) produces `hasContent = false`, rendering `<span />` in the right slot.
 
 ### Required Artifacts
 
@@ -79,7 +84,7 @@ The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-
 | `package.json` | VERIFIED | react@19.2.5, vite@8.0.9, tailwindcss@4.2.3, @uiw/react-codemirror@4.25.9, jsonrepair@3.14.0, lucide-react@1.8.0 all present |
 | `vite.config.ts` | VERIFIED | @tailwindcss/vite plugin, @/ path alias, vitest config |
 | `src/index.css` | VERIFIED | @import "tailwindcss" present; --color-bg-dominant and other CSS custom properties present |
-| `src/components/AppShell.tsx` | VERIFIED | TooltipProvider, useJsonDocument, useEditorRef, CodeMirrorEditor, Toolbar, TreeView, StatusBar all wired; h-dvh layout |
+| `src/components/AppShell.tsx` | VERIFIED | TooltipProvider, useJsonDocument, useEditorRef, CodeMirrorEditor, Toolbar, TreeView, StatusBar all wired; h-dvh layout; rawJson={rawJson} forwarded to StatusBar |
 | `src/components/CodeMirrorEditor.tsx` | VERIFIED | jsonParseLinter, lintGutter, diagnosticCount, vscodeDark, searchKeymap:true |
 | `src/hooks/useJsonDocument.ts` | VERIFIED | useState<string> + useCallback-memoized onChange |
 | `src/hooks/useEditorRef.ts` | VERIFIED | useRef<ReactCodeMirrorRef>(null) |
@@ -89,7 +94,7 @@ The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-
 | `src/components/TreeView.tsx` | VERIFIED | useMemo parse; SIZE_GATE_BYTES 2MB; empty/invalid/oversize/ok states; TreeNode render |
 | `src/components/TreeNode.tsx` | VERIFIED | buildPath import; depth<2 auto-expand; bg-[#0078d41a] selection; depth*16 indentation; recursive <TreeNode> children |
 | `src/lib/jsonPath.ts` | VERIFIED | IDENTIFIER_RE; bracket notation for numbers; dot for identifiers; quoted-bracket with escaped double quotes for others |
-| `src/components/StatusBar.tsx` | VERIFIED (gap) | Badge, "Valid JSON", error count pluralization, "Select a node" default text — but rawJson prop not wired from AppShell |
+| `src/components/StatusBar.tsx` | VERIFIED | Badge, "Valid JSON", error count pluralization, "Select a node" default text; rawJson optional prop wired correctly |
 | `src/components/TreeErrorBoundary.tsx` | VERIFIED | class component with getDerivedStateFromError returning {hasError:true} |
 | `components.json` | VERIFIED | shadcn configuration exists |
 | `src/components/ui/tabs.tsx` | VERIFIED | Tabs, TabsList, TabsTrigger, TabsContent present |
@@ -111,7 +116,7 @@ The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-
 | `src/components/TreeNode.tsx` | `src/lib/jsonPath.ts` | buildPath | WIRED | `import { buildPath }` used in child rendering |
 | `src/components/TreeNode.tsx` | recursive self | entries.map rendering <TreeNode> | WIRED | Children rendered with `<TreeNode key={...} nodeKey={k} path={buildPath(path, k)} depth={depth+1} .../>` |
 | `src/components/StatusBar.tsx` | shadcn Badge | error count badge | WIRED | `import { Badge }` from `@/components/ui/badge` |
-| `src/components/AppShell.tsx` | `src/components/StatusBar.tsx` | rawJson prop | NOT WIRED | AppShell passes only selectedPath and errorCount — rawJson not forwarded |
+| `src/components/AppShell.tsx` | `src/components/StatusBar.tsx` | rawJson prop | WIRED | `<StatusBar selectedPath={selectedPath} errorCount={errorCount} rawJson={rawJson} />` — gap now closed |
 
 ### Data-Flow Trace (Level 4)
 
@@ -122,18 +127,18 @@ The ROADMAP defines 5 success criteria. Plan frontmatter adds 8 additional plan-
 | TreeView | `rawJson` | AppShell state via prop | Yes — parsed to JSON tree | FLOWING |
 | StatusBar | `selectedPath` | AppShell state, set by TreeNode onSelect chain | Yes — path from user click | FLOWING |
 | StatusBar | `errorCount` | diagnosticCount(update.state) in CodeMirrorEditor updateListener | Yes — real lint diagnostic count | FLOWING |
-| StatusBar | `rawJson` | NOT PASSED FROM AppShell | N/A | DISCONNECTED — gap identified above |
+| StatusBar | `rawJson` | AppShell state, now forwarded via rawJson={rawJson} prop | Yes — empty string on fresh load, real content after user input | FLOWING |
 
 ### Behavioral Spot-Checks
 
 | Behavior | Command | Result | Status |
 |----------|---------|--------|--------|
 | TypeScript compiles cleanly | `npx tsc --noEmit` | Exit 0 | PASS |
-| Production build succeeds | `npm run build` | Exit 0, dist/index.html produced | PASS |
 | Test suite passes | `npx vitest run` | 35/35 tests pass (4 test files) | PASS |
-| format() pretty-prints | node verify | `JSON.stringify(JSON.parse('{"a":1}'), null, 2)` = `'{\n  "a": 1\n}'` | PASS (by code inspection) |
+| format() pretty-prints | code inspection | `JSON.stringify(JSON.parse('{"a":1}'), null, 2)` = `'{\n  "a": 1\n}'` | PASS |
 | buildPath constructs correct paths | vitest tests | 8 tests covering dot/bracket/quoted-bracket notation | PASS |
 | TreeNode recursive render | vitest tests | 14 behavioral tests via testing-library | PASS |
+| StatusBar rawJson prop wired | grep AppShell.tsx | Line 93: `rawJson={rawJson}` confirmed | PASS |
 
 Step 7b (server-side): SKIPPED — app requires a browser; behavioral checks above cover the runnable code surface.
 
@@ -156,11 +161,7 @@ All 10 Phase 1 requirements are accounted for across 3 plans. No orphaned requir
 
 ### Anti-Patterns Found
 
-| File | Pattern | Severity | Impact |
-|------|---------|----------|--------|
-| `src/components/AppShell.tsx` | StatusBar missing rawJson prop | Warning | Empty editor shows "Valid JSON" instead of blank right slot; misleading UX but not a crash |
-
-No TODO/FIXME/PLACEHOLDER comments found in production files. No unintentional empty returns. No console.log-only stubs. Intentional stubs (Toolbar/TreeView/StatusBar from Plan 01) were fully replaced by Plans 02 and 03.
+No new anti-patterns introduced by the gap fix. No TODO/FIXME/PLACEHOLDER comments in production files. No unintentional empty returns. No console.log-only stubs.
 
 **Notable deviation (not a gap):** AppShell uses `<TooltipTrigger render={<span />}>` instead of `<TooltipTrigger asChild><span>`. This is the correct API for `@base-ui/react` (which shadcn 4.x installs instead of Radix UI). Documented in SUMMARY; functionally equivalent. TypeScript compiles cleanly.
 
@@ -169,9 +170,8 @@ No TODO/FIXME/PLACEHOLDER comments found in production files. No unintentional e
 #### 1. Empty Editor Status Bar Right Slot
 
 **Test:** Open the app with empty editor (on first load), look at the bottom status bar right slot.
-**Expected:** Right slot should be empty (no text, no badge).
-**Actual (predicted):** "Valid JSON" appears because rawJson is not wired to StatusBar.
-**Why human:** Requires running browser app to observe the DOM render.
+**Expected:** Right slot should be empty (no text, no badge) — `rawJson` is `''`, so `hasContent=false`, so `<span />` renders.
+**Why human:** Requires running browser app to observe the DOM render. This was the previously identified gap; the code fix is confirmed but the visual result needs browser confirmation.
 
 #### 2. Disabled Transform Tab Tooltip
 
@@ -193,23 +193,10 @@ No TODO/FIXME/PLACEHOLDER comments found in production files. No unintentional e
 
 ### Gaps Summary
 
-**1 gap blocking full goal achievement:**
-
-**Truth:** "The status bar shows nothing in the right slot when the editor is empty"
-
-Root cause: `AppShell.tsx` renders `<StatusBar selectedPath={selectedPath} errorCount={errorCount} />` without passing the `rawJson` prop. `StatusBar` was designed to accept an optional `rawJson` prop specifically for this empty-state behavior, but the call site never wires it.
-
-Fix: In `src/components/AppShell.tsx`, change the StatusBar render to:
-
-```tsx
-<StatusBar selectedPath={selectedPath} errorCount={errorCount} rawJson={rawJson} />
-```
-
-This is a one-line change in AppShell. The StatusBar's `hasContent` logic already handles this correctly — it just never receives the signal. After this fix, on an empty editor with errorCount=0, `rawJson.trim().length === 0` → `hasContent=false` → `<span />` renders instead of "Valid JSON".
-
-**Severity:** The gap produces misleading feedback (shows "Valid JSON" on an empty editor) but does not crash or block any core workflow. All 10 ROADMAP requirements are functionally implemented.
+No gaps remain. The single previously identified gap (StatusBar never received rawJson from AppShell) has been resolved. All 13 must-haves are now verified programmatically. Four items require human browser verification before the phase can be marked fully passed.
 
 ---
 
-_Verified: 2026-04-21T01:35:00Z_
+_Verified: 2026-04-21T07:00:00Z_
 _Verifier: Claude (gsd-verifier)_
+_Re-verification: Yes — after gap fix applied to src/components/AppShell.tsx line 93_
