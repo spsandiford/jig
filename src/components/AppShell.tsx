@@ -90,7 +90,7 @@ export function AppShell() {
           <TabsContent value="transform" className="flex-1 overflow-hidden m-0" />
 
           {/* Status bar — 28px */}
-          <StatusBar selectedPath={selectedPath} errorCount={errorCount} />
+          <StatusBar selectedPath={selectedPath} errorCount={errorCount} rawJson={rawJson} />
         </Tabs>
       </div>
     </TooltipProvider>
