@@ -53,11 +53,11 @@ Exceptions:
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | Status bar text, tree node labels, breadcrumb, tab labels |
-| Label | 12px | 500 (medium) | 1.4 | Toolbar button labels, section labels, error count badge |
+| Label | 12px | 400 (regular) | 1.4 | Toolbar button labels, section labels, error count badge |
 | Heading | 16px | 600 (semibold) | 1.25 | Panel titles (if any appear), empty-state heading |
 | Code | 14px | 400 (regular) | 1.6 | All CodeMirror editor content — JetBrains Mono |
 
-Font weights in use: 400 (regular) and 600 (semibold). Label uses 500 only for de-emphasis contrast against semibold headings — treat as a sub-weight, not a third family weight.
+Font weights in use: 400 (regular) and 600 (semibold). Label de-emphasis is achieved via smaller font size (12px vs 14px/16px) — no third weight required.
 
 Source: CONTEXT.md (dark developer-tool aesthetic), Claude's discretion (VS Code / Insomnia reference).
 
@@ -138,6 +138,7 @@ Source: CONTEXT.md (D-03, D-04, D-05, D-06, D-07).
 - On Tree tab: toolbar shows only Copy (copies selected node value).
 - On Editor tab: toolbar shows all five actions.
 - Layout uses `height: 100dvh`, flex column. Tab panel takes `flex-1` with `overflow: hidden`.
+- Primary focal point: CodeMirror editor surface — largest visual region, receives initial focus on load.
 
 Source: CONTEXT.md (D-06, D-07), Claude's discretion (tab ordering, toolbar layout).
 
@@ -186,6 +187,8 @@ Source: CONTEXT.md (EDIT-02, EDIT-04, EDIT-05, EDIT-06, EDIT-07), Claude's discr
 | File load error | "Could not read file. Make sure it is a valid text file and try again." |
 | Repair: nothing to fix | "JSON is already valid — nothing to repair." |
 | Transform tab tooltip (disabled) | "Transform with jq — available in the next phase" |
+
+Toolbar CTA labels (Format, Minify, Repair, Copy) are verb-only by convention for this tool type — a noun object would be redundant when the entire tool operates on a single JSON document.
 
 Destructive actions in Phase 1: None. Editing replaces content in the editor directly — no confirmation dialogs required.
 
