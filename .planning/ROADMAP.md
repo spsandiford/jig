@@ -30,9 +30,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. User can search across keys and values, see the JSONPath of the selected node, and copy any result to clipboard
 **Plans**: 3 plans
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold Vite+React 19+Tailwind 4+shadcn, wire AppShell layout, CodeMirror editor with lint and Ctrl+F search (EDIT-01, EDIT-03, NAV-03)
-- [ ] 01-02-PLAN.md — Toolbar: Open File, Format, Minify, Repair, Copy + jsonTransform and clipboard utilities (EDIT-02, EDIT-04..07)
-- [ ] 01-03-PLAN.md — Recursive TreeView + TreeNode + JSONPath builder + full StatusBar (NAV-01, NAV-02)
+- [x] 01-01-PLAN.md — Scaffold Vite+React 19+Tailwind 4+shadcn, wire AppShell layout, CodeMirror editor with lint and Ctrl+F search (EDIT-01, EDIT-03, NAV-03)
+- [x] 01-02-PLAN.md — Toolbar: Open File, Format, Minify, Repair, Copy + jsonTransform and clipboard utilities (EDIT-02, EDIT-04..07)
+- [x] 01-03-PLAN.md — Recursive TreeView + TreeNode + JSONPath builder + full StatusBar (NAV-01, NAV-02)
 **UI hint**: yes
 
 ### Phase 2: Transform
