@@ -46,7 +46,6 @@ Exceptions:
 - Toolbar height: 36px (h-9) — inherited from Phase 1
 - Status bar height: 28px (h-7) — inherited from Phase 1
 - Run button height: 28px (h-7) — matches toolbar button height (h-7 per ToolbarButton pattern)
-- Loading spinner: 14px × 14px (w-3.5 h-3.5) — consistent with toolbar icon size
 
 Source: AppShell.tsx, Toolbar.tsx (pre-populated from Phase 1 patterns)
 
@@ -104,7 +103,7 @@ New components to build in Phase 2:
 | `RunButton` | Primary action; disabled while engine loading; shows loading spinner when running | shadcn `Button` (default/primary variant) |
 | `OutputPane` | Read-only display of jq result or error banner; scrollable | Tailwind div, `<pre>` for output |
 | `ErrorBanner` | Replaces output pane content on jq error; human-readable message | Tailwind div, `#f44747` border-left accent |
-| `EngineLoadingIndicator` | "jq engine loading…" hint shown below Run button while WASM initialises | Tailwind span + lucide `Loader2` spinner |
+| `EngineLoadingIndicator` | "jq engine loading…" hint shown below Run button while WASM initialises; uses `Loader2` icon at 16px × 16px (w-4 h-4, icon sizing — not a layout spacing value) | Tailwind span + lucide `Loader2` spinner |
 
 Reused from Phase 1 (no changes needed):
 - `AppShell` — remove `disabled` from Transform tab trigger, enable `TabsContent value="transform"`
@@ -152,8 +151,8 @@ Reused from Phase 1 (no changes needed):
 ### Engine Loading Indicator (XFRM-02)
 
 - Positioned below the Run button, visible only while engine is initialising
-- `Loader2` icon (14×14px, animate-spin) + text: "jq engine loading…"
-- Text color: `#858585`, font-size: 11px
+- `Loader2` icon at 16px × 16px (w-4 h-4) with animate-spin — this is an icon sizing constraint, not a layout spacing value
+- Text: "jq engine loading…", color: `#858585`, font-size: 11px
 - Disappears once engine signals ready; Run button becomes enabled
 
 ### Toolbar Behaviour on Transform Tab
