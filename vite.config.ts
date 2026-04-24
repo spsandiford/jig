@@ -9,11 +9,24 @@ export default defineConfig({
     react(),
     tailwindcss(),
     {
-      // In Vite dev, jq-web workers resolve jq.wasm relative to self.location.href
-      // (e.g. http://localhost:5173/src/workers/jq.wasm), which Vite would 404.
-      // This middleware intercepts ANY /**.wasm request and serves the real binary
-      // with the correct MIME type so both streaming and ArrayBuffer compile paths work.
-      name: 'jq-web-wasm-dev-server',
+      // jq-web (Emscripten) resolves jq.wasm relative to scriptDirectory, which is
+      // set from self.location.href inside the Web Worker. This differs by environment:
+      //
+      // Dev:  worker URL = http://host/src/workers/jqWorker.ts
+      //       → scriptDirectory = http://host/src/workers/
+      //       → fetches http://host/src/workers/jq.wasm  (404 without fix)
+      //
+      // Prod: worker URL = http://host/assets/jqWorker-HASH.js
+      //       → scriptDirectory = http://host/assets/
+      //       → fetches http://host/assets/jq.wasm  (404 without fix)
+      //
+      // Fix (dev): configureServer middleware intercepts any **.wasm request and
+      //   streams the real binary. Rollup transform does not run during dev pre-bundling.
+      //
+      // Fix (prod): Rollup transform patches jq-web's moduleArg default to include
+      //   locateFile, forcing the fetch to /jq.wasm (served from public/ → dist/).
+      name: 'jq-web-wasm-path',
+      // Dev: intercept any jq.wasm request and serve the real binary
       configureServer(server) {
         const wasmPath = path.resolve('./node_modules/jq-web/jq.wasm');
         server.middlewares.use((req, res, next) => {
@@ -26,6 +39,16 @@ export default defineConfig({
             next();
           }
         });
+      },
+      // Prod: workers get their own isolated Rollup build — transform hooks don't
+      // propagate into it. Instead, copy jq.wasm into dist/assets/ after the build
+      // so the worker can fetch it at /assets/jq.wasm (its scriptDirectory-relative path).
+      closeBundle() {
+        const src = path.resolve('./node_modules/jq-web/jq.wasm');
+        const assetsDir = path.resolve('./dist/assets');
+        if (fs.existsSync(src) && fs.existsSync(assetsDir)) {
+          fs.copyFileSync(src, path.join(assetsDir, 'jq.wasm'));
+        }
       },
     },
   ],
