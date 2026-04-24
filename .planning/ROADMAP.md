@@ -40,14 +40,14 @@ Plans:
 **Depends on**: Phase 1
 **Requirements**: XFRM-01, XFRM-02, XFRM-03
 **Success Criteria** (what must be TRUE):
-  1. User can type a jq expression and see a live output preview that updates as they type
+  1. User can type a jq expression and click Run (or Ctrl+Enter) to see output — D-03 locked click-to-run, no debounce/auto-run
   2. The jq engine shows a loading indicator while initializing; the Run button is disabled until the engine is ready
   3. Transform errors display a clear, readable message — not a raw jq error dump
 **Plans**: 3 plans
 Plans:
-- [ ] 02-01-PLAN.md — Install jq-web + stage public/jq.wasm + Worker Facade (jqWorker, useJqWorker, sanitizeJqError) + Wave 0 unit tests (XFRM-01, XFRM-02, XFRM-03)
-- [ ] 02-02-PLAN.md — Transform UI components: TransformPanel, ExpressionInput, RunButton, OutputPane, ErrorBanner + TransformPanel test suite (XFRM-01, XFRM-02, XFRM-03)
-- [ ] 02-03-PLAN.md — Enable Transform tab in AppShell + lift transformOutput state + Toolbar Copy-on-Transform routing + human verification of dev/production WASM serving (XFRM-01, XFRM-02, XFRM-03)
+- [x] 02-01-PLAN.md — Install jq-web + stage public/jq.wasm + Worker Facade (jqWorker, useJqWorker, sanitizeJqError) + Wave 0 unit tests (XFRM-01, XFRM-02, XFRM-03)
+- [x] 02-02-PLAN.md — Transform UI components: TransformPanel, ExpressionInput, RunButton, OutputPane, ErrorBanner + TransformPanel test suite (XFRM-01, XFRM-02, XFRM-03)
+- [x] 02-03-PLAN.md — Enable Transform tab in AppShell + lift transformOutput state + Toolbar Copy-on-Transform routing + human verification of dev/production WASM serving (XFRM-01, XFRM-02, XFRM-03)
 
 ### Phase 3: Compare
 **Goal**: Users can open two JSON documents and view both value-level and structural differences between them
