@@ -3,7 +3,7 @@ phase: 02-transform
 plan: 03
 subsystem: wiring
 tags: [react, wiring, appshell, toolbar, integration, transform]
-status: partial
+status: complete
 
 requires:
   - phase: 02-transform
@@ -53,7 +53,7 @@ completed: 2026-04-24
 
 **Transform tab enabled with TransformPanel mounted and Toolbar Copy routing jq output — wiring all Phase 02 pieces into a user-visible, ship-ready feature**
 
-## Status: Task 1 Complete — Task 2 (Human Verify) Pending
+## Status: Complete — All 17 human-verification steps approved 2026-04-24
 
 Task 1 (all automated work) is complete and committed. Task 2 is a `checkpoint:human-verify` gate that the orchestrator will handle separately. The human verification requires a real browser to test actual WASM execution and production-build WASM serving (these cannot be automated in jsdom per VALIDATION.md).
 
@@ -83,6 +83,10 @@ Task 1 (all automated work) is complete and committed. Task 2 is a `checkpoint:h
 ## Task Commits
 
 1. **Task 1** - `8d137fd` — `feat(02-03): enable Transform tab and route Copy to jq output`
+2. **Fix** - `d620970` — `fix(02-03): patch jq-web locateFile (superseded by middleware approach)`
+3. **Fix** - `b9d8e58` — `fix(02-03): serve jq.wasm via dev-server middleware`
+4. **Fix** - `b6c72fa` — `fix(02-03): copy jq.wasm to dist/assets/ for production worker`
+5. **Checkpoint approved** — 2026-04-24, all 17 human-verification steps passed
 
 ## Validation Results
 
@@ -103,22 +107,19 @@ Task 1 (all automated work) is complete and committed. Task 2 is a `checkpoint:h
   - `src/components/Toolbar.tsx` contains `outputText ?? ''` ✓
   - `src/components/Toolbar.test.tsx` contains 3 tests with `activeTab='transform'` or `activeTab="transform"` ✓
 
-## Pending: Task 2 — Human Verification
+## Task 2 — Human Verification: APPROVED 2026-04-24
 
-Task 2 is a `checkpoint:human-verify` gate requiring manual browser verification. The orchestrator will handle this checkpoint separately.
+All 17 steps passed. Two WASM path bugs were found and fixed during verification:
 
-**Verification checklist (17 steps) covers:**
-- A. Development smoke test: XFRM-01/02/03 end-to-end in real browser
-  - Tab enabled, engine loading → ready state transitions
-  - `.users[].name` expression runs and produces correct output
-  - Syntax error shows sanitized ErrorBanner (not stack trace)
-  - Copy button copies jq output (not rawJson) on Transform tab
-- B. Production-build WASM smoke test (RESEARCH.md Pitfall 1)
-  - `npm run build && npm run preview` — GET /jq.wasm returns 200 OK
-  - No 404 in Network tab; engine ready within 2s
-- C. Regression: Editor tab still works; Tree tab still works; Copy on editor tab copies editor content
+**Bug 1 (dev): jq-web fetching wrong URL in Vite dev worker context**
+- Root cause: Vite pre-bundles `jq-web` via esbuild before plugin transforms run; the worker's `self.location.href` (`/src/workers/jqWorker.ts`) set `scriptDirectory` to `/src/workers/`, causing a 404 for `/src/workers/jq.wasm`
+- Fix: `configureServer` middleware intercepts any `*.wasm` GET in dev and streams `node_modules/jq-web/jq.wasm` with `Content-Type: application/wasm`
 
-**Resume signal:** User responds "approved" after all 17 steps pass.
+**Bug 2 (prod): worker bundle at `/assets/` resolves jq.wasm to `/assets/jq.wasm`**
+- Root cause: Vite builds workers with an isolated Rollup sub-build; plugin `transform` hooks don't run inside it. Worker at `dist/assets/jqWorker-HASH.js` sets `scriptDirectory = /assets/`, fetching `/assets/jq.wasm` (404)
+- Fix: `closeBundle` hook copies `node_modules/jq-web/jq.wasm` to `dist/assets/jq.wasm` after every build
+
+Both fixes are in `vite.config.ts`.
 
 ## Deviations from Plan
 
