@@ -45,13 +45,17 @@ function renderToolbar(
   } = {},
 ) {
   const mockRef = props.editorRef ?? makeMockEditorRef();
+  // Cast through unknown: the mock only implements the subset of EditorView that the
+  // Toolbar actually uses (state.doc.toString, dispatch) — the full EditorView type has
+  // 60+ members we don't need in tests.
+  type EditorRefType = Parameters<typeof Toolbar>[0]['editorRef'];
   const defaults = {
-    editorRef: mockRef as Parameters<typeof Toolbar>[0]['editorRef'],
+    editorRef: mockRef as unknown as EditorRefType,
     rawJson: '{"a":1}',
     setRawJson: vi.fn(),
     activeTab: 'editor' as const,
   };
-  const merged = { ...defaults, ...props, editorRef: mockRef as Parameters<typeof Toolbar>[0]['editorRef'] };
+  const merged = { ...defaults, ...props, editorRef: mockRef as unknown as EditorRefType };
   const result = render(
     <TooltipProvider>
       <Toolbar {...merged} />
@@ -147,5 +151,46 @@ describe('Toolbar', () => {
     const clickSpy = vi.spyOn(fileInput, 'click');
     fireEvent.click(screen.getByText('Open File'));
     expect(clickSpy).toHaveBeenCalled();
+  });
+});
+
+describe('Copy on Transform tab', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(writeToClipboard).mockResolvedValue(true);
+  });
+
+  it('Test A: copies outputText when activeTab="transform"', async () => {
+    renderToolbar({ activeTab: 'transform', outputText: '"hello"' });
+    fireEvent.click(screen.getByRole('button', { name: /copy/i }));
+    await waitFor(() => {
+      expect(writeToClipboard).toHaveBeenCalledWith('"hello"');
+    });
+  });
+
+  it('Test B: copies empty string when activeTab="transform" and outputText is null', async () => {
+    vi.mocked(writeToClipboard).mockResolvedValue(true);
+    renderToolbar({ activeTab: 'transform', outputText: null });
+    fireEvent.click(screen.getByRole('button', { name: /copy/i }));
+    await waitFor(() => {
+      expect(writeToClipboard).toHaveBeenCalledWith('');
+    });
+    // Verify the error status path was not triggered (writeToClipboard resolved true)
+    expect(screen.queryByText(/Could not copy/)).not.toBeInTheDocument();
+  });
+
+  it('Test C: copies editor content (not outputText) when activeTab="editor"', async () => {
+    // renderToolbar creates a default mock editorRef with docContent '{"a":1}'
+    // and passes rawJson='{"a":1}' by default — both paths yield the same value.
+    // The key assertion is that outputText ('should_not_be_copied') is NOT used.
+    renderToolbar({
+      activeTab: 'editor',
+      outputText: 'should_not_be_copied',
+    });
+    fireEvent.click(screen.getByRole('button', { name: /copy/i }));
+    await waitFor(() => {
+      expect(writeToClipboard).toHaveBeenCalled();
+    });
+    expect(writeToClipboard).not.toHaveBeenCalledWith('should_not_be_copied');
   });
 });

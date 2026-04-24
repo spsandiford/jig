@@ -1,17 +1,13 @@
 import { useState } from 'react';
 import { FileJson, GitBranch, Zap } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { Toolbar } from './Toolbar';
 import { TreeView } from './TreeView';
 import { StatusBar } from './StatusBar';
 import { TreeErrorBoundary } from './TreeErrorBoundary';
+import { TransformPanel } from './TransformPanel';
 import { useJsonDocument } from '../hooks/useJsonDocument';
 import { useEditorRef } from '../hooks/useEditorRef';
 
@@ -23,6 +19,7 @@ export function AppShell() {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [errorCount, setErrorCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<TabValue>('editor');
+  const [transformOutput, setTransformOutput] = useState<string | null>(null);
 
   return (
     <TooltipProvider>
@@ -48,21 +45,13 @@ export function AppShell() {
               <GitBranch className="w-3.5 h-3.5 mr-1.5" />
               Tree
             </TabsTrigger>
-            <Tooltip>
-              <TooltipTrigger render={<span />}>
-                <TabsTrigger
-                  value="transform"
-                  disabled
-                  className="h-9 px-4 rounded-none opacity-40 text-[#858585]"
-                >
-                  <Zap className="w-3.5 h-3.5 mr-1.5" />
-                  Transform
-                </TabsTrigger>
-              </TooltipTrigger>
-              <TooltipContent>
-                Transform with jq — available in the next phase
-              </TooltipContent>
-            </Tooltip>
+            <TabsTrigger
+              value="transform"
+              className="h-9 px-4 rounded-none data-[state=active]:bg-[#1e1e1e] data-[state=active]:text-[#d4d4d4] data-[state=active]:shadow-[inset_0_-3px_0_0_#0078d4] text-[#858585]"
+            >
+              <Zap className="w-3.5 h-3.5 mr-1.5" />
+              Transform
+            </TabsTrigger>
           </TabsList>
 
           {/* Toolbar — 36px */}
@@ -71,6 +60,7 @@ export function AppShell() {
             rawJson={rawJson}
             setRawJson={setRawJson}
             activeTab={activeTab}
+            outputText={transformOutput}
           />
 
           {/* Content panel */}
@@ -87,7 +77,9 @@ export function AppShell() {
               <TreeView rawJson={rawJson} onNodeSelect={setSelectedPath} />
             </TreeErrorBoundary>
           </TabsContent>
-          <TabsContent value="transform" className="flex-1 overflow-hidden m-0" />
+          <TabsContent value="transform" className="flex-1 overflow-hidden m-0">
+            <TransformPanel rawJson={rawJson} onOutputChange={setTransformOutput} />
+          </TabsContent>
 
           {/* Status bar — 28px */}
           <StatusBar selectedPath={selectedPath} errorCount={errorCount} rawJson={rawJson} />
