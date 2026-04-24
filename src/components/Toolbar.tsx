@@ -23,6 +23,7 @@ export interface ToolbarProps {
   rawJson: string;
   setRawJson: (val: string) => void;
   activeTab: 'editor' | 'tree' | 'transform';
+  outputText?: string | null;
 }
 
 type StatusTone = 'info' | 'error' | null;
@@ -87,6 +88,7 @@ export function Toolbar({
   rawJson,
   setRawJson,
   activeTab,
+  outputText,
 }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
@@ -172,7 +174,9 @@ export function Toolbar({
 
   // EDIT-07: Copy
   async function handleCopy() {
-    const text = readDoc(editorRef, rawJson);
+    const text = activeTab === 'transform'
+      ? (outputText ?? '')
+      : readDoc(editorRef, rawJson);
     const ok = await writeToClipboard(text);
     if (ok) {
       setCopied(true);
