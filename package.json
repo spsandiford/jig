@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jq-web": "0.6.2",
+    "jsondiffpatch": "^0.7.3",
     "jsonrepair": "^3.14.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.5",
