@@ -12,7 +12,8 @@ One unified tool that handles every JSON task — edit, validate, transform, com
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ User can transform JSON using a code expression (jq) — Phase 2
+- ✓ User can copy any result to the clipboard — Phase 2
 
 ### Active
 
@@ -20,12 +21,10 @@ One unified tool that handles every JSON task — edit, validate, transform, com
 - [ ] User can load a JSON file from disk via file picker
 - [ ] Editor validates JSON syntax in real time, highlighting errors
 - [ ] User can format/pretty-print JSON with one action
-- [ ] User can transform JSON using a code expression (jq / JSONPath)
 - [ ] User can transform JSON using a visual/GUI field mapper
 - [ ] User can compare two JSON documents side by side (value diff)
 - [ ] User can view a structural diff between two JSON documents (schema-level differences)
 - [ ] User can compare before/after a transformation
-- [ ] User can copy any result to the clipboard
 
 ### Out of Scope
 
@@ -54,6 +53,9 @@ One unified tool that handles every JSON task — edit, validate, transform, com
 |----------|-----------|---------|
 | SPA with no backend | User wants a browser tool; no server needed for these operations | — Pending |
 | Both code + visual transforms | Power users want expressions; quick edits benefit from GUI | — Pending |
+| jq-web@0.6.2 over jq-wasm | jq-wasm spike found Vite WASM path issues; jq-web (fiatjaf) resolved them with dev middleware + closeBundle copy | Phase 2 ✓ |
+| Worker Facade for jq | CPU-bound WASM in dedicated Web Worker; hook owns ready/running/output/error state | Phase 2 ✓ |
+| Vite middleware for WASM serving | Dev server intercepts *.wasm GETs and streams from node_modules; closeBundle copies to dist/assets/ for prod | Phase 2 ✓ |
 
 ## Evolution
 
@@ -73,4 +75,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-20 after initialization*
+*Last updated: 2026-04-27 after Phase 2*
