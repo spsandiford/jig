@@ -3,8 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { ModeToggle } from './ModeToggle';
-// FIXME: import from ../hooks/useDiff once Plan 03-01 lands
-type DiffMode = 'value' | 'structure';
+import type { DiffMode } from '../hooks/useDiff';
 
 export interface CompareToolbarProps {
   mode: DiffMode;
@@ -39,7 +38,7 @@ export function CompareToolbar({
       data-testid="compare-toolbar"
       className="flex items-center h-9 px-2 gap-2 bg-[#252526] border-b border-[#3e3e42] shrink-0"
     >
-      <ModeToggle mode={mode} onChange={onModeChange} disabled={diffActive} />
+      <ModeToggle mode={mode} onChange={onModeChange} disabled={!diffActive} />
 
       <Separator orientation="vertical" className="h-5 mx-1 bg-[#3e3e42]" />
 

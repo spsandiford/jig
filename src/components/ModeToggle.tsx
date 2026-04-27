@@ -1,5 +1,4 @@
-// FIXME: import from ../hooks/useDiff once Plan 03-01 lands
-type DiffMode = 'value' | 'structure';
+import type { DiffMode } from '../hooks/useDiff';
 
 export interface ModeToggleProps {
   mode: DiffMode;
