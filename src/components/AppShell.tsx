@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileJson, GitBranch, Zap } from 'lucide-react';
+import { FileJson, GitBranch, Zap, GitCompare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
@@ -8,10 +8,11 @@ import { TreeView } from './TreeView';
 import { StatusBar } from './StatusBar';
 import { TreeErrorBoundary } from './TreeErrorBoundary';
 import { TransformPanel } from './TransformPanel';
+import { ComparePanel } from './ComparePanel';
 import { useJsonDocument } from '../hooks/useJsonDocument';
 import { useEditorRef } from '../hooks/useEditorRef';
 
-type TabValue = 'editor' | 'tree' | 'transform';
+type TabValue = 'editor' | 'tree' | 'transform' | 'compare';
 
 export function AppShell() {
   const { rawJson, setRawJson, onChange } = useJsonDocument('');
@@ -52,6 +53,13 @@ export function AppShell() {
               <Zap className="w-3.5 h-3.5 mr-1.5" />
               Transform
             </TabsTrigger>
+            <TabsTrigger
+              value="compare"
+              className="h-9 px-4 rounded-none data-[state=active]:bg-[#1e1e1e] data-[state=active]:text-[#d4d4d4] data-[state=active]:shadow-[inset_0_-3px_0_0_#0078d4] text-[#858585]"
+            >
+              <GitCompare className="w-3.5 h-3.5 mr-1.5" />
+              Compare
+            </TabsTrigger>
           </TabsList>
 
           {/* Toolbar — 36px */}
@@ -79,6 +87,9 @@ export function AppShell() {
           </TabsContent>
           <TabsContent value="transform" className="flex-1 overflow-hidden m-0">
             <TransformPanel rawJson={rawJson} onOutputChange={setTransformOutput} />
+          </TabsContent>
+          <TabsContent value="compare" className="flex-1 overflow-hidden m-0">
+            <ComparePanel />
           </TabsContent>
 
           {/* Status bar — 28px */}

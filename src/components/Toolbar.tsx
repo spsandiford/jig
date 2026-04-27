@@ -22,7 +22,7 @@ export interface ToolbarProps {
   editorRef: React.RefObject<ReactCodeMirrorRef>;
   rawJson: string;
   setRawJson: (val: string) => void;
-  activeTab: 'editor' | 'tree' | 'transform';
+  activeTab: 'editor' | 'tree' | 'transform' | 'compare';
   outputText?: string | null;
 }
 
@@ -176,6 +176,8 @@ export function Toolbar({
   async function handleCopy() {
     const text = activeTab === 'transform'
       ? (outputText ?? '')
+      : activeTab === 'compare'
+      ? ''
       : readDoc(editorRef, rawJson);
     const ok = await writeToClipboard(text);
     if (ok) {
