@@ -58,9 +58,9 @@ Plans:
   2. User can switch to a structural diff view showing which keys exist in one document but not the other
 **Plans**: 3 plans
 Plans:
-- [ ] 03-01-PLAN.md — Install jsondiffpatch@0.7.3 + diffDecorations.ts (StateField, theme, filterStructural, buildPaneDecorations, deltaToLineEntries) + useDiff hook with full TDD coverage (CMP-01, CMP-02)
-- [ ] 03-02-PLAN.md — Compare leaf components: ParseErrorBanner, ModeToggle, ComparePaneHeader, ComparePaneEditor, CompareToolbar (CMP-01, CMP-02)
-- [ ] 03-03-PLAN.md — ComparePanel composition + 10-test suite + AppShell Compare tab + Toolbar activeTab union widening (CMP-01, CMP-02)
+- [x] 03-01-PLAN.md — Install jsondiffpatch@0.7.3 + diffDecorations.ts (StateField, theme, filterStructural, buildPaneDecorations, deltaToLineEntries) + useDiff hook with full TDD coverage (CMP-01, CMP-02)
+- [x] 03-02-PLAN.md — Compare leaf components: ParseErrorBanner, ModeToggle, ComparePaneHeader, ComparePaneEditor, CompareToolbar (CMP-01, CMP-02)
+- [x] 03-03-PLAN.md — ComparePanel composition + 10-test suite + AppShell Compare tab + Toolbar activeTab union widening (CMP-01, CMP-02)
 **UI hint**: yes
 
 ## Progress
