@@ -14,6 +14,8 @@ One unified tool that handles every JSON task — edit, validate, transform, com
 
 - ✓ User can transform JSON using a code expression (jq) — Phase 2
 - ✓ User can copy any result to the clipboard — Phase 2
+- ✓ User can compare two JSON documents side by side (value diff) — Phase 3
+- ✓ User can view a structural diff between two JSON documents — Phase 3
 
 ### Active
 
@@ -22,8 +24,6 @@ One unified tool that handles every JSON task — edit, validate, transform, com
 - [ ] Editor validates JSON syntax in real time, highlighting errors
 - [ ] User can format/pretty-print JSON with one action
 - [ ] User can transform JSON using a visual/GUI field mapper
-- [ ] User can compare two JSON documents side by side (value diff)
-- [ ] User can view a structural diff between two JSON documents (schema-level differences)
 - [ ] User can compare before/after a transformation
 
 ### Out of Scope
@@ -75,4 +75,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-27 after Phase 2*
+*Last updated: 2026-04-27 after Phase 3 — Compare panel complete, CMP-01 and CMP-02 closed*
