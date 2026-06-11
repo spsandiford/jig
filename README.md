@@ -1,73 +1,42 @@
-# React + TypeScript + Vite
+# jig
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-based JSON workbench for editing, exploring, transforming, and comparing JSON documents.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Editor
+A CodeMirror-powered JSON editor with syntax highlighting, real-time error detection, and a status bar showing document size and error count.
 
-## React Compiler
+Toolbar actions:
+- **Open File** — load a JSON file from disk
+- **Format** — pretty-print the document
+- **Minify** — compact the document to a single line
+- **Repair** — auto-fix common JSON syntax errors
+- **Copy** — copy the current content to the clipboard
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Tree
+Browse the parsed JSON as an interactive tree. Selecting a node shows its path in the status bar.
 
-## Expanding the ESLint configuration
+### Transform
+Apply [jq](https://jqlang.org/) expressions to the document using a WebAssembly jq engine. Results appear in a read-only output pane; the Transform output can also be copied from the toolbar.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Compare
+Side-by-side diff of two JSON documents. Differences are highlighted inline in both panes.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Development
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev       # start dev server
+npm test          # run unit tests
+npm run build     # production build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vite.dev)
+- [CodeMirror 6](https://codemirror.net/) — editor
+- [jq-web](https://github.com/nicowillis/jq-web) — WebAssembly jq engine
+- [jsondiffpatch](https://github.com/benjamine/jsondiffpatch) — JSON diffing
+- [jsonrepair](https://github.com/josdejong/jsonrepair) — JSON repair
+- [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) — styling
